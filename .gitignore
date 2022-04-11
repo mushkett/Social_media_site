@@ -1,0 +1,5 @@
+# created by virtualenv automatically
+venv/
+.idea/
+Social_media/settings.py
+db.sqlite3
