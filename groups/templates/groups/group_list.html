@@ -19,8 +19,8 @@
 
         {% if user.is_authenticated %}
 
-            <a href="{% url 'groups:create' %}" class="btn btn-md btn-fill btn-warning">
-                <span class="glyphicon glyphicon-plus-sign">Create new group</span>
+            <a href="{% url 'groups:create' %}" class="btn btn-primary">
+                <span class="glyphicon glyphicon-plus-sign"></span> Create new group
             </a>
 
         {% endif %}
@@ -39,7 +39,7 @@
                         <div class="row">
                             <div class="col-md-4">
                                 <span class="badge">{{ group.members.count }}</span>
-                                member{{ group.members.column|pluralize }}
+                                member{{ group.members.count|pluralize }}
                             </div>
                             <div class="col-md-4">
                                 <span class="badge"> {{ group.posts.count }}</span>

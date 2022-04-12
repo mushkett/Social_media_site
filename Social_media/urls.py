@@ -16,6 +16,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from Social_media import views
+from groups import urls as groups_urls
+from posts import urls as posts_urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -24,5 +26,7 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),
     path('test/', views.TestPage.as_view(), name='test'),
     path('thanks/', views.ThanksPage.as_view(), name='thanks'),
+    path('groups/', include(groups_urls)),
+    path('posts/', include(posts_urls)),
 
 ]
