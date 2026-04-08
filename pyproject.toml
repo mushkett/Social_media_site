@@ -1,0 +1,46 @@
+[tool.pylint.main]
+load-plugins = ["pylint_django"]
+django-settings-module = "social_media.settings.dev"
+# nh3 is a C extension — pylint cannot introspect its members
+generated-members = ["nh3.*"]
+# Skip auto-generated migrations entirely
+ignore-paths = [".*/migrations/.*"]
+
+[tool.pylint.format]
+max-line-length = 119
+
+[tool.pylint."messages control"]
+disable = [
+    "missing-module-docstring",
+    "missing-class-docstring",
+    "missing-function-docstring",
+    # Duplicate sanitize logic in group/post models is intentional
+    "duplicate-code",
+    # Settings files use wildcard import from base by design (base.* must come first)
+    "wildcard-import",
+    "unused-wildcard-import",
+    "wrong-import-order",
+]
+
+[tool.pylint.design]
+max-parents = 10
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "social_media.settings.dev"
+python_files = ["tests.py", "test_*.py", "*_test.py"]
+addopts = "-v --tb=short"
+testpaths = ["tests", "accounts", "groups", "posts"]
+
+[tool.coverage.run]
+source = ["."]
+omit = [
+    ".venv/*",
+    "*/migrations/*",
+    "*/tests/*",
+    "manage.py",
+    "social_media/settings/*",
+]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false

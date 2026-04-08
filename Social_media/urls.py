@@ -13,19 +13,26 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf import settings
 from django.contrib import admin
 from django.urls import path, include
-from Social_media import views
+
+from django_ratelimit.decorators import ratelimit
+
+from social_media import views
 from groups import urls as groups_urls
 from posts import urls as posts_urls
 
+# Rate-limit admin login to 5 POST attempts per hour per IP
+admin.site.login = ratelimit(key='ip', rate='5/h', method='POST', block=True)(
+    admin.site.login
+)
+
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path(f'{settings.ADMIN_URL}/', admin.site.urls),
     path('', views.HomePage.as_view(), name='home'),
     path('accounts/', include('accounts.urls'), name='accounts'),
     path('accounts/', include('django.contrib.auth.urls')),
-    path('test/', views.TestPage.as_view(), name='test'),
-    path('thanks/', views.ThanksPage.as_view(), name='thanks'),
     path('groups/', include(groups_urls)),
     path('posts/', include(posts_urls)),
 

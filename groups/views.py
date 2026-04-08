@@ -1,57 +1,96 @@
 from django.contrib import messages
 from django.db import IntegrityError
-from django.shortcuts import render, get_object_or_404
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.shortcuts import get_object_or_404
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse
 from django.views import generic
-from groups.models import Group, GroupMember
+from django import forms
 
-# Create your views here.
+from groups.models import Group, GroupMember
 
 
 class CreateGroup(LoginRequiredMixin, generic.CreateView):
+    """Create a new group."""
     fields = ['name', 'description']
     model = Group
 
+    def form_valid(self, form):
+        form.instance.creator = self.request.user
+        return super().form_valid(form)
+
+
+class DeleteGroup(LoginRequiredMixin, UserPassesTestMixin, generic.DeleteView):
+    """Delete a group. Only the creator can delete it."""
+    model = Group
+    success_url = '/groups/'
+
+    def get_queryset(self):
+        return super().get_queryset().filter(creator=self.request.user)
+
+    def test_func(self):
+        return self.get_object().creator == self.request.user
+
 
 class SingleGroup(generic.DetailView):
+    """Display a single group with its posts."""
     model = Group
 
 
 class ListGroups(generic.ListView):
+    """List all groups."""
     model = Group
+    paginate_by = 20
 
 
-class JoinGroup(LoginRequiredMixin, generic.RedirectView):
+# Empty form for CSRF protection on join/leave actions
+class EmptyForm(forms.Form):
+    pass
 
-    def get_redirect_url(self, *args, **kwargs):
-        return reverse('groups:single', kwargs={'slug': self.kwargs.get('slug')})
 
-    def get(self, request, *args, **kwargs):
-        group = get_object_or_404(Group, slug=self.kwargs.get('slug'))
+class JoinGroup(LoginRequiredMixin, generic.View):
+    """Join a group. Uses POST for CSRF protection."""
+
+    def post(self, request, *args, **kwargs):
+        group = get_object_or_404(Group, slug=kwargs.get('slug'))
         try:
-            GroupMember.objects.create(user=self.request.user, group=group)
+            GroupMember.objects.create(user=request.user, group=group)
         except IntegrityError:
-            messages.warning(self.request, f'Warning already a member of {group.name}!')
+            messages.warning(
+                request, f'Warning: already a member of {group.name}!')
         else:
-            messages.success(self.request, f'You are now a member of {group.name}!')
-        return super().get(request, *args, **kwargs)
-
-
-class LeaveGroup(LoginRequiredMixin, generic.RedirectView):
-
-    def get_redirect_url(self, *args, **kwargs):
-        return reverse('groups:single', kwargs={'slug': self.kwargs.get('slug')})
+            messages.success(request, f'You are now a member of {group.name}!')
+        return generic.RedirectView.as_view(
+            url=reverse('groups:single', kwargs={'slug': group.slug})
+        )(request)
 
     def get(self, request, *args, **kwargs):
+        """GET requests redirect to group page (for direct URL access)."""
+        return generic.RedirectView.as_view(
+            url=reverse('groups:single', kwargs={'slug': kwargs.get('slug')})
+        )(request)
+
+
+class LeaveGroup(LoginRequiredMixin, generic.View):
+    """Leave a group. Uses POST for CSRF protection."""
+
+    def post(self, request, *args, **kwargs):
+        slug = kwargs.get('slug')
         try:
             membership = GroupMember.objects.filter(
-                user=self.request.user,
-                group__slug=self.kwargs.get('slug')
+                user=request.user,
+                group__slug=slug
             ).get()
         except GroupMember.DoesNotExist:
-            messages.warning(self.request, 'Sorry you are not in this group!')
+            messages.warning(request, 'Sorry, you are not in this group!')
         else:
             membership.delete()
-            messages.success(self.request, 'You have left the group!')
-        return super().get(request, *args, **kwargs)
+            messages.success(request, 'You have left the group!')
+        return generic.RedirectView.as_view(
+            url=reverse('groups:single', kwargs={'slug': slug})
+        )(request)
+
+    def get(self, request, *args, **kwargs):
+        """GET requests redirect to group page (for direct URL access)."""
+        return generic.RedirectView.as_view(
+            url=reverse('groups:single', kwargs={'slug': kwargs.get('slug')})
+        )(request)

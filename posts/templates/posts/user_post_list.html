@@ -1,15 +1,27 @@
-{% extends 'posts/post_base.html' %}
+{% extends 'base.html' %}
 
-{% block prepost %}
-    <div class="col-md-4">
-    <h1>@{{ post_user.username }}</h1>
+{% block content %}
+<div class="page-wrap">
+  <div class="profile-header" style="margin-bottom:2rem;">
+    <div class="profile-avatar">{{ post_user.username|first|upper }}</div>
+    <div>
+      <div class="profile-name">{{ post_user.username }}</div>
+      <div class="profile-handle">@{{ post_user.username }}</div>
     </div>
-{% endblock %}
+  </div>
 
-{% block post_content %}
-    <div class="col-md-8">
-        {% for post in post_list %}
+  <p class="section-label" style="margin-bottom:1rem;">Posts</p>
+  {% if post_list %}
+    <div class="post-feed">
+      {% for post in post_list %}
         {% include "posts/_post.html" %}
-        {% endfor %}
+      {% endfor %}
     </div>
+  {% else %}
+    <div class="empty-state">
+      <div class="empty-state-icon"><i class="bi bi-file-earmark-text"></i></div>
+      <p class="empty-state-text">No posts yet.</p>
+    </div>
+  {% endif %}
+</div>
 {% endblock %}

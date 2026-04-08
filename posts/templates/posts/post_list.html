@@ -1,40 +1,55 @@
 {% extends 'posts/post_base.html' %}
-{% block prepost %}
-    <div class="col-md-4">
-    {% if request.user.is_authenticated %}
-        <div class="card card-with-shadow">
-            <div class="content">
-                <h5 class="title">Your Groups</h5>
-                <ul class="list-unstyled">
-                    {% for member_group in get_user_groups %}
-                        <li class="group li-with-bullet">
-                            <a href="{% url 'groups:single' slug=member_group.group.slug%}"></a>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
-        </div>
-    {% endif %}
-    <div class="card card-with-shadow">
-        <div class="content">
-            <h5 class="title">All groups</h5>
-            <ul class="list-unstyled">
-                {% for other_group in get_other_groups %}
-
-                    <li class="group li-with-bullet">
-                    <a href="{% url 'groups:single' slug=other_group.slug%}"></a>
-                    </li>
-                {% endfor %}
-            </ul>
-        </div>
-    </div>
-    </div>
-{% endblock %}
 
 {% block post_content %}
-    <div class="col-md-8">
-        {% for post in post_list %}
-            {% include "posts/_post.html" %}
-        {% endfor %}
+<!-- Feed column -->
+<div>
+  <p class="section-label">Latest</p>
+  <h1 class="page-title" style="margin-bottom:1.5rem;">Your <span>Feed</span></h1>
+
+  {% if post_list %}
+    <div class="post-feed">
+      {% for post in post_list %}
+        {% include "posts/_post.html" %}
+      {% endfor %}
     </div>
+  {% else %}
+    <div class="empty-state">
+      <div class="empty-state-icon"><i class="bi bi-layout-text-sidebar-reverse"></i></div>
+      <p class="empty-state-text">Nothing here yet. Create a post or join some groups!</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block post_post %}
+<!-- Sidebar -->
+<aside class="sidebar">
+  {% if request.user.is_authenticated and get_user_groups %}
+    <div class="sidebar-block">
+      <div class="sidebar-title">Your Groups</div>
+      {% for member_group in get_user_groups %}
+        <a class="sidebar-link" href="{% url 'groups:single' slug=member_group.group.slug %}">
+          <i class="bi bi-people"></i> {{ member_group.group.name }}
+        </a>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% if get_other_groups %}
+    <div class="sidebar-block">
+      <div class="sidebar-title">All Groups</div>
+      {% for other_group in get_other_groups %}
+        <a class="sidebar-link" href="{% url 'groups:single' slug=other_group.slug %}">
+          <i class="bi bi-people"></i> {{ other_group.name }}
+        </a>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% if user.is_authenticated %}
+    <a href="{% url 'posts:create' %}" class="btn btn-primary w-100 mt-1">
+      <i class="bi bi-plus me-1"></i> New Post
+    </a>
+  {% endif %}
+</aside>
 {% endblock %}

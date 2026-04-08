@@ -1,36 +1,55 @@
 {% extends 'groups/group_base.html' %}
 
 {% block pregroup %}
-    <div class="container">
-        <h1>{{ group.name }}</h1>
-        <h2>Member Count: {{ group.members.count }}</h2>
+<div class="page-wrap">
 
-        <div class="content">
-            {% if user in group.members.all %}
-                <a href="{% url 'groups:leave' slug=group.slug %}" class="bnt btn-lg btn-primary">
-                    <span class="fa fa-times-circle-o"> Leave</span>
-                </a>
-            {% else %}
-                <a href="{% url 'groups:join' slug=group.slug %}" class="bnt btn-lg btn-primary">
-                    <span class="fa fa-check-circle-o"> Join</span>
-                </a>
-            {% endif %}
-        </div>
+  <div class="group-header">
+    <div class="group-header-name">{{ group.name }}</div>
+    <div class="group-header-meta">
+      <span><i class="bi bi-people-fill"></i> {{ group.members.count }} member{{ group.members.count|pluralize }}</span>
+      <span><i class="bi bi-file-text-fill"></i> {{ group.posts.count }} post{{ group.posts.count|pluralize }}</span>
     </div>
+
+    {% if user.is_authenticated %}
+      {% if user in group.members.all %}
+        <form method="post" action="{% url 'groups:leave' slug=group.slug %}" class="d-inline">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-outline-danger btn-sm">
+            <i class="bi bi-x-circle me-1"></i> Leave Group
+          </button>
+        </form>
+      {% else %}
+        <form method="post" action="{% url 'groups:join' slug=group.slug %}" class="d-inline">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-primary btn-sm">
+            <i class="bi bi-check-circle me-1"></i> Join Group
+          </button>
+        </form>
+      {% endif %}
+    {% else %}
+      <a href="{% url 'accounts:login' %}?next={{ request.path|urlencode }}" class="btn btn-primary btn-sm">
+        <i class="bi bi-box-arrow-in-right me-1"></i> Log in to join
+      </a>
+    {% endif %}
+  </div>
+
 {% endblock %}
+
 {% block group_content %}
-
-    <div class="col-md-8">
-
-        {% if group.posts.count == 0 %}
-            <h2>No post in this group yet!</h2>
-
-        {% else %}
-
-            {% for post in group.posts.all %}
-                {% include "posts/_post.html" %}
-            {% endfor %}
-
-        {% endif %}
+  {% if group.posts.count == 0 %}
+    <div class="empty-state" style="padding-bottom:3rem;">
+      <div class="empty-state-icon"><i class="bi bi-file-earmark-text"></i></div>
+      <p class="empty-state-text">No posts in this group yet.</p>
+      {% if user.is_authenticated %}
+        <a href="{% url 'posts:create' %}" class="btn btn-primary mt-3">Write the first post</a>
+      {% endif %}
     </div>
+  {% else %}
+    <div class="post-feed" style="padding-bottom:3rem;">
+      {% for post in group.posts.all %}
+        {% include "posts/_post.html" %}
+      {% endfor %}
+    </div>
+  {% endif %}
+</div><!-- close page-wrap -->
 {% endblock %}
