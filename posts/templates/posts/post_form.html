@@ -1,8 +1,24 @@
-{% extends 'posts/post_base.html' %} {% load crispy_forms_tags %} {% block
-post_content %}
-<h4>Create a new post</h4>
-<form id="postForm" action="{% url 'posts:create' %}" method="post">
-  {% csrf_token %} {{ form|crispy }}
-  <button type="submit" class="btn btn-primary btn-lg">Post</button>
-</form>
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="page-wrap" style="max-width:640px;">
+  <p class="section-label">Write</p>
+  <h1 class="page-title" style="margin-bottom:1.5rem;">New <span>Post</span></h1>
+
+  <div class="card">
+    <div class="card-body">
+      <form id="postForm" action="{% url 'posts:create' %}" method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <div class="d-flex gap-2 mt-4">
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-send me-1"></i> Publish
+          </button>
+          <a href="{% url 'posts:all' %}" class="btn btn-ghost">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 {% endblock %}

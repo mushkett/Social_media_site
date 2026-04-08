@@ -1,22 +1,26 @@
-<div class="media list-group-item">
-	<h3 class="mr-5"><a href="{% url 'posts:for_user' username=post.user.username %}">@{{ post.user.username }}</a></h3>
+<article class="post-card">
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:.75rem;margin-bottom:.5rem;">
+    <a class="post-author" href="{% url 'posts:for_user' username=post.user.username %}">
+      @{{ post.user.username }}
+    </a>
+    {% if post.group %}
+      <a class="post-group-badge" href="{% url 'groups:single' slug=post.group.slug %}">
+        <i class="bi bi-people-fill"></i> {{ post.group.name }}
+      </a>
+    {% endif %}
+  </div>
 
-	<div class="media-body">
-		<strong>{{ post.user.username }}</strong>
-		<h5>{{ post.message_html|safe }}</h5>
-			<time class="time"><a href="{% url 'posts:single' username=post.user.username pk=post.pk %}">{{ post.created_at }}</a></time>
-			{% if post.group %}
-			<span class="group-name">in <a href="#">{{ post.group.name }}</a></span>
-			{% endif %}
-		</h5>
+  <div class="post-body">{{ post.message_html|safe }}</div>
 
-		<div class="media-footer">
-			{% if user.is_authenticated and post.user == user and not hide_delete %}
-				<a href="{% url 'posts:delete' pk=post.pk %}" title="delete" class="btn btn-danger">
-					<i class="glyphicon glyphicon-remove"></i> Delete
-
-				</a>
-			{% endif %}
-		</div>
-	</div>
-</div>
+  <div class="post-meta">
+    <a href="{% url 'posts:single' username=post.user.username pk=post.pk %}">
+      <i class="bi bi-clock"></i> {{ post.created_at|date:"M j, Y" }}
+    </a>
+    {% if user.is_authenticated and post.user == user and not hide_delete %}
+      <span class="dot">&bull;</span>
+      <a href="{% url 'posts:delete' pk=post.pk %}" style="color:var(--danger);">
+        <i class="bi bi-trash"></i> Delete
+      </a>
+    {% endif %}
+  </div>
+</article>
