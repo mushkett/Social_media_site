@@ -21,6 +21,8 @@ whitenoise>=6.7.0
 
 # Development tools
 django-extensions>=3.2.0
+pylint>=3.3.0
+pylint-django>=2.6.0
 
 # Forms & Frontend
 django-bootstrap5>=24.2

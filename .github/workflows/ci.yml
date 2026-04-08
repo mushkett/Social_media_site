@@ -28,7 +28,7 @@ jobs:
     env:
       SECRET_KEY: ci-insecure-key-for-testing-only
       DATABASE_URL: postgres://postgres:postgres@localhost:5432/social_media
-      DJANGO_SETTINGS_MODULE: Social_media.settings.dev
+      DJANGO_SETTINGS_MODULE: social_media.settings.dev
 
     steps:
       - uses: actions/checkout@v4
@@ -42,6 +42,12 @@ jobs:
 
       - name: Install dependencies
         run: pip install -r requirements-dev.txt
+
+      - name: Django system check
+        run: python manage.py check
+
+      - name: Run linter
+        run: pylint accounts groups posts social_media
 
       - name: Run tests
         run: pytest --cov=. --cov-report=term-missing --cov-fail-under=80

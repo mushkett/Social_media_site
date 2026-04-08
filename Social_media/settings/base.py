@@ -44,7 +44,7 @@ MIDDLEWARE = [
     'csp.middleware.CSPMiddleware',
 ]
 
-ROOT_URLCONF = 'Social_media.urls'
+ROOT_URLCONF = 'social_media.urls'
 
 TEMPLATES = [
     {
@@ -62,7 +62,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'Social_media.wsgi.application'
+WSGI_APPLICATION = 'social_media.wsgi.application'
 
 
 # Database
