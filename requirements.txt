@@ -10,6 +10,10 @@ gunicorn>=22.0.0
 psycopg[binary]>=3.2.0
 dj-database-url>=2.2.0
 
+# Cache
+django-redis>=5.4.0
+redis>=5.0.0
+
 # Security & Utils
 python-decouple>=3.8
 nh3>=0.2.14
