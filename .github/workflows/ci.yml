@@ -38,16 +38,19 @@ jobs:
         with:
           python-version: '3.12'
           cache: pip
-          cache-dependency-path: requirements-dev.txt
+          cache-dependency-path: pyproject.toml
 
       - name: Install dependencies
-        run: pip install -r requirements-dev.txt
+        run: pip install -e ".[dev]"
+
+      - name: Check formatting (ruff)
+        run: ruff format --check accounts groups posts social_media core
+
+      - name: Run linter (ruff)
+        run: ruff check accounts groups posts social_media core
 
       - name: Django system check
         run: python manage.py check
 
       - name: Run tests
         run: pytest --cov=. --cov-report=term-missing --cov-fail-under=80
-
-      - name: Run linter
-        run: pylint accounts groups posts social_media

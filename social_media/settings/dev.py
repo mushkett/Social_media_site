@@ -1,5 +1,6 @@
-from .base import *
 from decouple import config
+
+from .base import *
 
 # Development settings
 INSTALLED_APPS = INSTALLED_APPS + ['django_extensions']
@@ -15,10 +16,10 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 # Disable manifest storage for development/testing (no collectstatic needed)
 STORAGES = {
-    "default": {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    'default': {
+        'BACKEND': 'django.core.files.storage.FileSystemStorage',
     },
-    "staticfiles": {
-        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    'staticfiles': {
+        'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage',
     },
 }

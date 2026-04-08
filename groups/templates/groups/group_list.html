@@ -1,51 +1,64 @@
-{% extends 'groups/group_base.html' %}
-
-{% block pregroup %}
-<div class="page-wrap">
-  <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:2rem;">
-    <div>
+{% extends 'groups/group_base.html' %} {% block pregroup %}
+  <div class="page-wrap">
+    <div
+      style="
+             display: flex;
+             align-items: flex-end;
+             justify-content: space-between;
+             flex-wrap: wrap;
+             gap: 1rem;
+             margin-bottom: 2rem;
+            "
+    >
+      <div>
+        {% if user.is_authenticated %}
+          <p class="section-label">Welcome back</p>
+          <h1 class="page-title">
+            @{{ user.username }}<br />
+            <span>Groups</span>
+          </h1>
+        {% else %}
+          <p class="section-label">Explore</p>
+          <h1 class="page-title">All <span>Groups</span></h1>
+        {% endif %}
+        <p style="color: var(--text-2); font-size: 0.95rem">
+          Find your community — join groups and start conversations.
+        </p>
+      </div>
       {% if user.is_authenticated %}
-        <p class="section-label">Welcome back</p>
-        <h1 class="page-title">
-          @{{ user.username }}<br>
-          <span>Groups</span>
-        </h1>
-      {% else %}
-        <p class="section-label">Explore</p>
-        <h1 class="page-title">All <span>Groups</span></h1>
+        <a href="{% url 'groups:create' %}" class="btn btn-primary">
+          <i class="bi bi-plus me-1"></i> New Group
+        </a>
       {% endif %}
-      <p style="color:var(--text-2);font-size:.95rem;">Find your community — join groups and start conversations.</p>
     </div>
+{% endblock %} {% block group_content %} {% if object_list %}
+  <div class="group-grid" style="padding-bottom: 3rem">
+    {% for group in object_list %}
+      <a class="group-card" href="{% url 'groups:single' slug=group.slug %}">
+        <div class="group-card-name">{{ group.name }}</div>
+        <div class="group-card-desc">{{ group.description_html|safe }}</div>
+        <div class="group-card-stats">
+          <span
+          ><i class="bi bi-people-fill"></i> {{ group.member_count }} member </span
+            >
+            <span
+            ><i class="bi bi-file-text-fill"></i> {{ group.post_count }} post{{group.post_count|pluralize }}</span
+              >
+            </div>
+          </a>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="empty-state" style="padding-bottom: 3rem">
+    <div class="empty-state-icon"><i class="bi bi-people"></i></div>
+    <p class="empty-state-text">No groups yet. Be the first to create one!</p>
     {% if user.is_authenticated %}
-      <a href="{% url 'groups:create' %}" class="btn btn-primary">
-        <i class="bi bi-plus me-1"></i> New Group
-      </a>
+      <a href="{% url 'groups:create' %}" class="btn btn-primary mt-3"
+      >Create a Group</a
+        >
     {% endif %}
   </div>
-{% endblock %}
-
-{% block group_content %}
-  {% if object_list %}
-    <div class="group-grid" style="padding-bottom:3rem;">
-      {% for group in object_list %}
-        <a class="group-card" href="{% url 'groups:single' slug=group.slug %}">
-          <div class="group-card-name">{{ group.name }}</div>
-          <div class="group-card-desc">{{ group.description_html|safe }}</div>
-          <div class="group-card-stats">
-            <span><i class="bi bi-people-fill"></i> {{ group.members.count }} member{{ group.members.count|pluralize }}</span>
-            <span><i class="bi bi-file-text-fill"></i> {{ group.posts.count }} post{{ group.posts.count|pluralize }}</span>
-          </div>
-        </a>
-      {% endfor %}
-    </div>
-  {% else %}
-    <div class="empty-state" style="padding-bottom:3rem;">
-      <div class="empty-state-icon"><i class="bi bi-people"></i></div>
-      <p class="empty-state-text">No groups yet. Be the first to create one!</p>
-      {% if user.is_authenticated %}
-        <a href="{% url 'groups:create' %}" class="btn btn-primary mt-3">Create a Group</a>
-      {% endif %}
-    </div>
-  {% endif %}
-</div><!-- close page-wrap -->
+{% endif %}
+  </div>
+<!-- close page-wrap -->
 {% endblock %}

@@ -1,39 +1,29 @@
 """Social_media URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/4.0/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
+    https://docs.djangoproject.com/en/5.2/topics/http/urls/
 """
+
 from django.conf import settings
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import include, path
 
 from django_ratelimit.decorators import ratelimit
 
 from social_media import views
-from groups import urls as groups_urls
-from posts import urls as posts_urls
 
 # Rate-limit admin login to 5 POST attempts per hour per IP
-admin.site.login = ratelimit(key='ip', rate='5/h', method='POST', block=True)(
-    admin.site.login
-)
+admin.site.login = ratelimit(key='ip', rate='5/h', method='POST', block=True)(admin.site.login)  # type: ignore[method-assign]
 
 urlpatterns = [
+    # Health checks (no auth required)
+    path('', include('core.urls')),
+    # Admin
     path(f'{settings.ADMIN_URL}/', admin.site.urls),
+    # Main app
     path('', views.HomePage.as_view(), name='home'),
     path('accounts/', include('accounts.urls'), name='accounts'),
     path('accounts/', include('django.contrib.auth.urls')),
-    path('groups/', include(groups_urls)),
-    path('posts/', include(posts_urls)),
-
+    path('groups/', include('groups.urls')),
+    path('posts/', include('posts.urls')),
 ]

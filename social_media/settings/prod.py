@@ -1,16 +1,19 @@
-from .base import *
 from decouple import config
+
+from core.logging import configure_structlog, get_logging_config
+
+from .base import *
 
 # Production settings
 SECRET_KEY = config('SECRET_KEY')
 
 DEBUG = False
 
-ALLOWED_HOSTS = config(
-    'ALLOWED_HOSTS',
-    default='',
-    cast=lambda v: [s.strip() for s in v.split(',') if s.strip()]
-)
+# Configure structlog for JSON output
+configure_structlog(debug=False)
+LOGGING = get_logging_config(debug=False)
+
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='', cast=lambda v: [s.strip() for s in v.split(',') if s.strip()])
 
 # Security settings for production
 SECURE_SSL_REDIRECT = True
@@ -33,42 +36,16 @@ X_FRAME_OPTIONS = 'DENY'
 
 # Content Security Policy (django-csp 4.x)
 CONTENT_SECURITY_POLICY = {
-    "DIRECTIVES": {
-        "default-src": ["'self'"],
-        "script-src": ["'self'"],
-        "style-src": ["'self'", "https://cdn.jsdelivr.net", "https://fonts.googleapis.com"],
-        "font-src": ["'self'", "https://fonts.gstatic.com", "https://cdn.jsdelivr.net"],
-        "img-src": ["'self'"],
-        "connect-src": ["'self'"],
-        "frame-ancestors": ["'none'"],
+    'DIRECTIVES': {
+        'default-src': ["'self'"],
+        'script-src': ["'self'"],
+        'style-src': ["'self'", 'https://cdn.jsdelivr.net', 'https://fonts.googleapis.com'],
+        'font-src': ["'self'", 'https://fonts.gstatic.com', 'https://cdn.jsdelivr.net'],
+        'img-src': ["'self'"],
+        'connect-src': ["'self'"],
+        'frame-ancestors': ["'none'"],
     }
 }
 
-# Logging
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': '[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s',
-            'datefmt': '%d/%b/%Y %H:%M:%S'
-        },
-    },
-    'handlers': {
-        'console': {
-            'level': 'INFO',
-            'class': 'logging.StreamHandler',
-            'formatter': 'verbose',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'level': 'INFO',
-        },
-        'django.request': {
-            'handlers': ['console'],
-            'level': 'WARNING',
-        },
-    },
-}
+# Logging is configured via structlog in the imports above
+# LOGGING = get_logging_config(debug=False) is already set
