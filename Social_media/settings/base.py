@@ -77,6 +77,28 @@ DATABASES = {
 }
 
 
+# Cache — Redis via django-redis
+REDIS_URL = config('REDIS_URL', default='redis://localhost:6379/0')
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': REDIS_URL,
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+            # Return None on connection errors instead of raising exceptions
+            'IGNORE_EXCEPTIONS': True,
+        },
+        'KEY_PREFIX': 'social',
+        'TIMEOUT': 300,  # 5 minutes default
+    }
+}
+
+# Store sessions in Redis (cached_db falls back to DB if Redis is unavailable)
+SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
+SESSION_CACHE_ALIAS = 'default'
+
+
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
 
