@@ -27,7 +27,7 @@
         </form>
       {% endif %}
     {% else %}
-      <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="btn btn-primary btn-sm">
+      <a href="{% url 'accounts:login' %}?next={{ request.path|urlencode }}" class="btn btn-primary btn-sm">
         <i class="bi bi-box-arrow-in-right me-1"></i> Log in to join
       </a>
     {% endif %}

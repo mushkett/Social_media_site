@@ -10,6 +10,7 @@ Django-based social media platform with groups and posts functionality. Users ca
 - **Django**: 5.2+ LTS
 - **Database**: PostgreSQL (via Docker for local dev)
 - **Frontend**: Bootstrap 5, vanilla JavaScript
+- **Security**: django-csp, django-ratelimit, nh3 (HTML sanitization)
 - **Testing**: pytest + pytest-django
 - **Static Files**: WhiteNoise
 
@@ -54,7 +55,7 @@ Social_media_site/
 │   │   ├── dev.py          # Development settings (DEBUG=True)
 │   │   └── prod.py         # Production settings
 │   ├── urls.py             # Root URL configuration
-│   └── views.py            # Homepage and static views
+│   └── views.py            # Homepage view
 ├── accounts/               # User authentication app
 │   ├── forms.py            # UserCreateForm
 │   ├── urls.py             # login, logout, signup
@@ -95,7 +96,7 @@ Social_media_site/
 - **Models**: `Post` (with optional group FK)
 - **Features**: CRUD for posts, user post list, group-filtered posts
 - **URLs**: `/posts/`, `/posts/new/`, `/posts/<pk>/`, `/posts/by/<username>/`, `/posts/in/<slug>/`
-- Markdown rendering with HTML sanitization (bleach)
+- Markdown rendering with HTML sanitization (nh3)
 
 ## Code Conventions
 
@@ -140,19 +141,22 @@ Social_media_site/
 
 ## Environment Variables
 
-Required in `.env` file:
+Required in `.env` file (copy from `.env.example`):
 
 ```env
 # Django
-SECRET_KEY=your-secret-key-here
+SECRET_KEY=your-secret-key-here   # generate: python -c "import secrets; print(secrets.token_urlsafe(50))"
 DEBUG=True
 ALLOWED_HOSTS=localhost,127.0.0.1
 
-# Database (PostgreSQL)
-DATABASE_URL=postgres://postgres:postgres@localhost:5432/social_media
+# Database
+DATABASE_URL=sqlite:///db.sqlite3  # or postgres://postgres:postgres@localhost:5432/social_media
 
-# Optional
+# Django settings module
 DJANGO_SETTINGS_MODULE=Social_media.settings.dev
+
+# Admin panel URL — use a random secret string
+ADMIN_URL=your-secret-admin-path   # generate: python -c "import secrets; print(secrets.token_urlsafe(16))"
 ```
 
 ## Database
@@ -186,15 +190,17 @@ User (django.contrib.auth)
 
 ## Security Checklist
 
-- [ ] SECRET_KEY from environment variable
+- [x] SECRET_KEY from environment variable (required, no default)
+- [x] Admin URL randomised via `ADMIN_URL` env var
+- [x] Admin login rate-limited (5 POST/hour per IP via django-ratelimit)
+- [x] CSP configured (django-csp) — no `data:` in img-src
+- [x] Markdown sanitized with nh3 (http/https only, no javascript: URIs)
+- [x] SameSite + HttpOnly cookies in production
+- [x] HSTS, SSL redirect, CSRF protection enabled in production
+- [x] `DeleteGroup` scoped to creator via `get_queryset()`
 - [ ] DEBUG=False in production
-- [ ] ALLOWED_HOSTS properly configured
-- [ ] HTTPS enforced (SECURE_SSL_REDIRECT)
-- [ ] HSTS enabled (SECURE_HSTS_SECONDS)
-- [ ] Secure cookies (SESSION_COOKIE_SECURE, CSRF_COOKIE_SECURE)
-- [ ] User input sanitized (bleach for markdown)
-- [ ] CSRF protection on all POST forms
-- [ ] No sensitive data in git
+- [ ] ALLOWED_HOSTS properly configured for production domain
+- [ ] No sensitive data in git (.env in .gitignore)
 
 ## Common Tasks
 

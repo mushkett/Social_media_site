@@ -28,19 +28,27 @@ class Group(models.Model):
     description = models.TextField(blank=True, default='')
     description_html = models.TextField(editable=False, default='', blank=True)
     members = models.ManyToManyField(User, through='GroupMember')
+    creator = models.ForeignKey(
+        User,
+        related_name='created_groups',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
     created_at = models.DateTimeField(auto_now_add=True, null=True)
 
     def __str__(self):
         return self.name
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.name)
+        self.slug = slugify(self.name, allow_unicode=True)
         # Convert markdown to HTML and sanitize
         raw_html = _md.render(self.description)
         self.description_html = nh3.clean(
             raw_html,
             tags=ALLOWED_TAGS,
             attributes=ALLOWED_ATTRIBUTES,
+            url_schemes={'http', 'https'},
         )
         super().save(*args, **kwargs)
 

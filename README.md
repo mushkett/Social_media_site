@@ -37,7 +37,9 @@ pip install -r requirements.txt
 
 ```bash
 cp .env.example .env
-# Edit .env with your settings
+# Edit .env — set SECRET_KEY and ADMIN_URL to random values:
+# python -c "import secrets; print(secrets.token_urlsafe(50))"  # for SECRET_KEY
+# python -c "import secrets; print(secrets.token_urlsafe(16))"  # for ADMIN_URL
 ```
 
 ### 3. Run migrations

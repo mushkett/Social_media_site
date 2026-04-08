@@ -52,6 +52,7 @@ class Post(models.Model):
             raw_html,
             tags=ALLOWED_TAGS,
             attributes=ALLOWED_ATTRIBUTES,
+            url_schemes={'http', 'https'},
         )
         super().save(*args, **kwargs)
 

@@ -1,10 +1,9 @@
 from django.contrib import messages
 from django.db import IntegrityError
 from django.shortcuts import get_object_or_404
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse
 from django.views import generic
-from django.views.generic.edit import FormMixin
 from django import forms
 
 from groups.models import Group, GroupMember
@@ -14,6 +13,22 @@ class CreateGroup(LoginRequiredMixin, generic.CreateView):
     """Create a new group."""
     fields = ['name', 'description']
     model = Group
+
+    def form_valid(self, form):
+        form.instance.creator = self.request.user
+        return super().form_valid(form)
+
+
+class DeleteGroup(LoginRequiredMixin, UserPassesTestMixin, generic.DeleteView):
+    """Delete a group. Only the creator can delete it."""
+    model = Group
+    success_url = '/groups/'
+
+    def get_queryset(self):
+        return super().get_queryset().filter(creator=self.request.user)
+
+    def test_func(self):
+        return self.get_object().creator == self.request.user
 
 
 class SingleGroup(generic.DetailView):
