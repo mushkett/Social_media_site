@@ -4,6 +4,12 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 
+@pytest.fixture(autouse=True)
+def disable_ratelimit(settings):
+    """Disable rate limiting for all tests."""
+    settings.RATELIMIT_ENABLE = False
+
+
 @pytest.fixture
 def user(db):
     """Create a test user."""
