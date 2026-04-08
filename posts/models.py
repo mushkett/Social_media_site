@@ -1,26 +1,26 @@
+from django.contrib.auth import get_user_model
 from django.db import models
 from django.urls import reverse
-from django.conf import settings
 
-import misaka
-import bleach
+import nh3
+from markdown_it import MarkdownIt
 
 from groups.models import Group
-from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
+_md = MarkdownIt()
+
 # Allowed HTML tags for sanitized markdown output
-ALLOWED_TAGS = [
-    'a', 'abbr', 'acronym', 'b', 'blockquote', 'code', 'em', 'i',
+ALLOWED_TAGS = {
+    'a', 'abbr', 'b', 'blockquote', 'code', 'em', 'i',
     'li', 'ol', 'p', 'pre', 'strong', 'ul', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
     'br', 'hr', 'img', 'table', 'thead', 'tbody', 'tr', 'th', 'td',
-]
+}
 ALLOWED_ATTRIBUTES = {
-    'a': ['href', 'title', 'rel'],
-    'abbr': ['title'],
-    'acronym': ['title'],
-    'img': ['src', 'alt', 'title'],
+    'a': {'href', 'title'},
+    'abbr': {'title'},
+    'img': {'src', 'alt', 'title'},
 }
 
 
@@ -31,7 +31,7 @@ class Post(models.Model):
         related_name='posts',
         on_delete=models.CASCADE
     )
-    created_at = models.DateTimeField(auto_now_add=True)  # Fixed: was auto_now
+    created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     message = models.TextField()
     message_html = models.TextField(editable=False, blank=True)
@@ -46,14 +46,12 @@ class Post(models.Model):
     def __str__(self):
         return self.message[:50]
 
-    def save(self, *args, **kwargs):  # Fixed: was *kwargs
-        # Convert markdown to HTML and sanitize
-        raw_html = misaka.html(self.message)
-        self.message_html = bleach.clean(
+    def save(self, *args, **kwargs):
+        raw_html = _md.render(self.message)
+        self.message_html = nh3.clean(
             raw_html,
             tags=ALLOWED_TAGS,
             attributes=ALLOWED_ATTRIBUTES,
-            strip=True
         )
         super().save(*args, **kwargs)
 

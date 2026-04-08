@@ -3,19 +3,21 @@ from django.urls import reverse
 from django.utils.text import slugify
 from django.contrib.auth import get_user_model
 
-import misaka
-import bleach
+import nh3
+from markdown_it import MarkdownIt
 
 User = get_user_model()
 
+_md = MarkdownIt()
+
 # Allowed HTML tags for sanitized markdown output
-ALLOWED_TAGS = [
+ALLOWED_TAGS = {
     'a', 'abbr', 'b', 'blockquote', 'code', 'em', 'i',
     'li', 'ol', 'p', 'pre', 'strong', 'ul', 'h1', 'h2', 'h3',
     'br', 'hr',
-]
+}
 ALLOWED_ATTRIBUTES = {
-    'a': ['href', 'title', 'rel'],
+    'a': {'href', 'title'},
 }
 
 
@@ -34,12 +36,11 @@ class Group(models.Model):
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
         # Convert markdown to HTML and sanitize
-        raw_html = misaka.html(self.description)
-        self.description_html = bleach.clean(
+        raw_html = _md.render(self.description)
+        self.description_html = nh3.clean(
             raw_html,
             tags=ALLOWED_TAGS,
             attributes=ALLOWED_ATTRIBUTES,
-            strip=True
         )
         super().save(*args, **kwargs)
 

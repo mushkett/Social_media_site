@@ -1,0 +1,19 @@
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "Social_media.settings.dev"
+python_files = ["tests.py", "test_*.py", "*_test.py"]
+addopts = "-v --tb=short"
+testpaths = ["tests", "accounts", "groups", "posts"]
+
+[tool.coverage.run]
+source = ["."]
+omit = [
+    ".venv/*",
+    "*/migrations/*",
+    "*/tests/*",
+    "manage.py",
+    "Social_media/settings/*",
+]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false

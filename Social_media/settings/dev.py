@@ -2,6 +2,7 @@ from .base import *
 from decouple import config
 
 # Development settings
+INSTALLED_APPS = INSTALLED_APPS + ['django_extensions']
 SECRET_KEY = config(
     'SECRET_KEY', default='django-insecure-dev-key-change-in-production')
 
