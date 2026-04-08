@@ -1,28 +1,28 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="page-wrap" style="max-width:600px;">
-  <div class="danger-zone">
-    <div class="danger-zone-title">
-      <i class="bi bi-exclamation-triangle me-2"></i>Delete this post?
-    </div>
-    <p style="color:var(--text-2);font-size:.9rem;margin-bottom:1.5rem;">
-      This action cannot be undone. The post will be permanently removed.
-    </p>
+  <div class="page-wrap" style="max-width:600px;">
+    <div class="danger-zone">
+      <div class="danger-zone-title">
+        <i class="bi bi-exclamation-triangle me-2"></i>Delete this post?
+      </div>
+      <p style="color:var(--text-2);font-size:.9rem;margin-bottom:1.5rem;">
+        This action cannot be undone. The post will be permanently removed.
+      </p>
 
-    <div style="margin-bottom:1.5rem;">
-      {% include 'posts/_post.html' with post=object hide_delete=True %}
-    </div>
+      <div style="margin-bottom:1.5rem;">
+        {% include 'posts/_post.html' with post=object hide_delete=True %}
+      </div>
 
-    <form method="post" class="d-flex gap-2">
-      {% csrf_token %}
-      <button type="submit" class="btn btn-danger">
-        <i class="bi bi-trash me-1"></i> Yes, Delete
-      </button>
-      <a href="{% url 'posts:single' username=user.username pk=object.pk %}" class="btn btn-ghost">
-        Cancel
-      </a>
-    </form>
+      <form method="post" class="d-flex gap-2">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">
+          <i class="bi bi-trash me-1"></i> Yes, Delete
+        </button>
+        <a href="{% url 'posts:single' username=user.username pk=object.pk %}" class="btn btn-ghost">
+          Cancel
+        </a>
+      </form>
+    </div>
   </div>
-</div>
 {% endblock %}

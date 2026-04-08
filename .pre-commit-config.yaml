@@ -1,0 +1,68 @@
+# Pre-commit hooks configuration
+# Install: pre-commit install
+# Run manually: pre-commit run --all-files
+
+default_language_version:
+  python: python3.12
+
+repos:
+  # General file checks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: check-json
+      - id: check-added-large-files
+        args: ['--maxkb=1000']
+      - id: check-merge-conflict
+      - id: debug-statements
+      - id: detect-private-key
+
+  # Ruff - fast Python linter & formatter (replaces pylint, flake8, black, isort)
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.8.6
+    hooks:
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+      - id: ruff-format
+
+  # Django template indentation
+  - repo: https://github.com/rtts/djhtml
+    rev: '3.0.7'
+    hooks:
+      - id: djhtml
+        args: [--tabwidth=2]
+
+  # Security checks
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.8.3
+    hooks:
+      - id: bandit
+        args: ['-c', 'pyproject.toml']
+        additional_dependencies: ['bandit[toml]']
+        exclude: ^tests/
+
+  - repo: local
+    hooks:
+      # Type checking - uses local venv to access all project dependencies
+      - id: mypy
+        name: mypy
+        entry: .venv/bin/python -m mypy accounts groups posts social_media core
+        language: system
+        types: [python]
+        args: [--config-file=pyproject.toml]
+        pass_filenames: false
+
+      - id: django-check
+        name: Django Check
+        entry: .venv/bin/python manage.py check
+        language: system
+        pass_filenames: false
+        types: [python]
+
+ci:
+  autofix_commit_msg: 'style: auto-fix by pre-commit hooks'
+  autoupdate_commit_msg: 'chore: update pre-commit hooks'

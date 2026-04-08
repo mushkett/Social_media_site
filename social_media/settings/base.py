@@ -3,7 +3,9 @@ Django settings for Social_media project.
 
 Django 5.2 LTS - Updated for 2026 best practices.
 """
+
 from pathlib import Path
+
 import dj_database_url
 from decouple import config
 
@@ -26,7 +28,10 @@ INSTALLED_APPS = [
     'django_bootstrap5',
     'crispy_forms',
     'crispy_bootstrap5',
+    'health_check',
+    'health_check.contrib.redis',
     # Local apps
+    'core',
     'accounts',
     'groups',
     'posts',
@@ -34,7 +39,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    "whitenoise.middleware.WhiteNoiseMiddleware",
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -63,6 +68,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'social_media.wsgi.application'
+ASGI_APPLICATION = 'social_media.asgi.application'
 
 
 # Database
@@ -135,11 +141,11 @@ USE_TZ = True
 
 # Django 4.2+ STORAGES config (replaces deprecated STATICFILES_STORAGE)
 STORAGES = {
-    "default": {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    'default': {
+        'BACKEND': 'django.core.files.storage.FileSystemStorage',
     },
-    "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    'staticfiles': {
+        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
     },
 }
 
@@ -160,3 +166,6 @@ CRISPY_TEMPLATE_PACK = 'bootstrap5'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Custom User Model
+AUTH_USER_MODEL = 'accounts.User'

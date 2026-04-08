@@ -2,59 +2,59 @@
 {% block title %}Star Social — Discover your communities{% endblock %}
 
 {% block content %}
-<div class="page-wrap">
-  <div class="hero">
+  <div class="page-wrap">
+    <div class="hero">
 
     <!-- Left: copy -->
-    <div>
-      <p class="hero-kicker">A place to connect</p>
-      <h1 class="hero-title">
-        Find your<br>
-        <em>people</em>,<br>
-        share your<br>
-        story.
-      </h1>
-      <p class="hero-sub">
-        Star Social is a space for real conversations. Join groups that matter to you,
-        post your thoughts, and build community.
-      </p>
-      <div class="hero-actions">
-        {% if user.is_authenticated %}
-          <a href="{% url 'posts:all' %}" class="btn btn-primary btn-lg">
-            <i class="bi bi-layout-text-sidebar-reverse me-1"></i> Read Feed
-          </a>
-          <a href="{% url 'groups:all' %}" class="btn btn-ghost btn-lg">
-            Explore Groups
-          </a>
-        {% else %}
-          <a href="{% url 'accounts:signup' %}" class="btn btn-primary btn-lg">
-            Get Started
-          </a>
-          <a href="{% url 'accounts:login' %}" class="btn btn-ghost btn-lg">
-            Log In
-          </a>
-        {% endif %}
+      <div>
+        <p class="hero-kicker">A place to connect</p>
+        <h1 class="hero-title">
+          Find your<br>
+          <em>people</em>,<br>
+          share your<br>
+          story.
+        </h1>
+        <p class="hero-sub">
+          Star Social is a space for real conversations. Join groups that matter to you,
+          post your thoughts, and build community.
+        </p>
+        <div class="hero-actions">
+          {% if user.is_authenticated %}
+            <a href="{% url 'posts:all' %}" class="btn btn-primary btn-lg">
+              <i class="bi bi-layout-text-sidebar-reverse me-1"></i> Read Feed
+            </a>
+            <a href="{% url 'groups:all' %}" class="btn btn-ghost btn-lg">
+              Explore Groups
+            </a>
+          {% else %}
+            <a href="{% url 'accounts:signup' %}" class="btn btn-primary btn-lg">
+              Get Started
+            </a>
+            <a href="{% url 'accounts:login' %}" class="btn btn-ghost btn-lg">
+              Log In
+            </a>
+          {% endif %}
+        </div>
       </div>
-    </div>
 
     <!-- Right: mock posts preview -->
-    <div class="hero-visual">
-      <div class="hero-posts-preview">
-        <div class="hero-post-mock">
-          <div class="hero-post-mock-author">@astronomer</div>
-          <div class="hero-post-mock-text">Just spotted a new comet passing the inner solar system. This is the third one this month — something's stirring out there.</div>
-        </div>
-        <div class="hero-post-mock">
-          <div class="hero-post-mock-author">@philosophyclub</div>
-          <div class="hero-post-mock-text">If a tree falls in the forest and no one is around to post about it, did it really happen?</div>
-        </div>
-        <div class="hero-post-mock">
-          <div class="hero-post-mock-author">@devlogs</div>
-          <div class="hero-post-mock-text">Finally fixed that bug that's been haunting me for three weeks. The culprit: a missing semicolon on line 847.</div>
+      <div class="hero-visual">
+        <div class="hero-posts-preview">
+          <div class="hero-post-mock">
+            <div class="hero-post-mock-author">@astronomer</div>
+            <div class="hero-post-mock-text">Just spotted a new comet passing the inner solar system. This is the third one this month — something's stirring out there.</div>
+          </div>
+          <div class="hero-post-mock">
+            <div class="hero-post-mock-author">@philosophyclub</div>
+            <div class="hero-post-mock-text">If a tree falls in the forest and no one is around to post about it, did it really happen?</div>
+          </div>
+          <div class="hero-post-mock">
+            <div class="hero-post-mock-author">@devlogs</div>
+            <div class="hero-post-mock-text">Finally fixed that bug that's been haunting me for three weeks. The culprit: a missing semicolon on line 847.</div>
+          </div>
         </div>
       </div>
-    </div>
 
+    </div>
   </div>
-</div>
 {% endblock %}
