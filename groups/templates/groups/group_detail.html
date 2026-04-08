@@ -1,36 +1,48 @@
-{% extends 'groups/group_base.html' %}
+{% extends 'groups/group_base.html' %} {% block pregroup %}
+<div class="container">
+  <h1>{{ group.name }}</h1>
+  <h2>Member Count: {{ group.members.count }}</h2>
 
-{% block pregroup %}
-    <div class="container">
-        <h1>{{ group.name }}</h1>
-        <h2>Member Count: {{ group.members.count }}</h2>
+  <div class="content mt-3">
+    {% if user.is_authenticated %} {% if user in group.members.all %}
+    <form
+      method="post"
+      action="{% url 'groups:leave' slug=group.slug %}"
+      class="d-inline"
+    >
+      {% csrf_token %}
+      <button type="submit" class="btn btn-lg btn-outline-danger">
+        <i class="bi bi-x-circle"></i> Leave
+      </button>
+    </form>
+    {% else %}
+    <form
+      method="post"
+      action="{% url 'groups:join' slug=group.slug %}"
+      class="d-inline"
+    >
+      {% csrf_token %}
+      <button type="submit" class="btn btn-lg btn-primary">
+        <i class="bi bi-check-circle"></i> Join
+      </button>
+    </form>
+    {% endif %} {% else %}
+    <a
+      href="{% url 'accounts:login' %}?next={{ request.path }}"
+      class="btn btn-lg btn-primary"
+    >
+      <i class="bi bi-box-arrow-in-right"></i> Log in to join
+    </a>
+    {% endif %}
+  </div>
+</div>
+{% endblock %} {% block group_content %}
 
-        <div class="content">
-            {% if user in group.members.all %}
-                <a href="{% url 'groups:leave' slug=group.slug %}" class="bnt btn-lg btn-primary">
-                    <span class="fa fa-times-circle-o"> Leave</span>
-                </a>
-            {% else %}
-                <a href="{% url 'groups:join' slug=group.slug %}" class="bnt btn-lg btn-primary">
-                    <span class="fa fa-check-circle-o"> Join</span>
-                </a>
-            {% endif %}
-        </div>
-    </div>
-{% endblock %}
-{% block group_content %}
+<div class="col-md-8">
+  {% if group.posts.count == 0 %}
+  <h2>No post in this group yet!</h2>
 
-    <div class="col-md-8">
-
-        {% if group.posts.count == 0 %}
-            <h2>No post in this group yet!</h2>
-
-        {% else %}
-
-            {% for post in group.posts.all %}
-                {% include "posts/_post.html" %}
-            {% endfor %}
-
-        {% endif %}
-    </div>
+  {% else %} {% for post in group.posts.all %} {% include "posts/_post.html" %}
+  {% endfor %} {% endif %}
+</div>
 {% endblock %}
